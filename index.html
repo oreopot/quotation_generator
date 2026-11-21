@@ -45,12 +45,12 @@
   /* ---------- Layout ---------- */
   .layout {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: minmax(360px, 36%) 1fr;
     gap: 20px;
     padding: 20px;
     align-items: start;
   }
-  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 1250px) { .layout { grid-template-columns: 1fr; } }
 
   /* ---------- Form panel ---------- */
   .panel {
@@ -58,7 +58,7 @@
     padding: 16px; position: sticky; top: 70px;
     max-height: calc(100vh - 90px); overflow-y: auto;
   }
-  @media (max-width: 1100px) { .panel { position: static; max-height: none; } }
+  @media (max-width: 1250px) { .panel { position: static; max-height: none; } }
   .panel h2 {
     font-size: 13px; text-transform: uppercase; letter-spacing: .05em;
     color: #6b7280; margin: 18px 0 8px;
@@ -78,7 +78,11 @@
   }
   .item-card .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
   .item-card .head strong { font-size: 12px; }
-  .item-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .item-grid { display: grid; grid-template-columns: 0.7fr 0.7fr 0.7fr 1.3fr 1.3fr; gap: 8px; }
+  .item-grid .field { margin-bottom: 0; }
+  .panel { padding: 20px 22px; }
+  .field input, .field textarea { padding: 9px 10px; }
+  @media (max-width: 520px) { .item-grid { grid-template-columns: 1fr 1fr 1fr; } }
   .hint { font-size: 12px; color: #6b7280; margin-top: 4px; }
 
   /* ---------- Quotation sheet (A4) ---------- */
@@ -337,8 +341,6 @@
           <div class="field"><label>Item No.</label><input data-i="${i}" data-k="no" value="${esc(it.no)}" placeholder="${i + 1}"></div>
           <div class="field"><label>Qty.</label><input data-i="${i}" data-k="qty" value="${esc(it.qty)}" inputmode="decimal"></div>
           <div class="field"><label>KW</label><input data-i="${i}" data-k="kw" value="${esc(it.kw)}" inputmode="decimal"></div>
-        </div>
-        <div class="row2">
           <div class="field"><label>Unit Price (₹)</label><input data-i="${i}" data-k="unit" value="${esc(it.unit)}" inputmode="decimal"></div>
           <div class="field"><label>Total Price (₹)</label><input data-i="${i}" data-k="total" value="${esc(it.total)}" inputmode="decimal"
             ${it.unit !== "" ? "disabled placeholder='auto'" : ""}></div>
