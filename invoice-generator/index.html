@@ -231,7 +231,7 @@
     <div class="field"><label>Reverse Charge</label>
       <select id="f_rc"><option value="No" selected>No</option><option value="Yes">Yes</option></select></div>
     <div class="row2">
-      <div class="field"><label>Default GST %</label><input id="f_gst" value="5" inputmode="decimal"></div>
+      <div class="field"><label>Default GST %</label><input id="f_gst" value="5" class="num" inputmode="decimal" autocomplete="off"></div>
       <div class="field"><label>Tax type</label>
         <select id="f_taxtype">
           <option value="cs">CGST + SGST (within Gujarat)</option>
@@ -259,7 +259,7 @@
       <div class="field"><label>Ref / Cheque No. (optional)</label><input id="f_txn" placeholder="UTR / cheque no."></div>
     </div>
     <label class="check"><input type="checkbox" id="f_sameamt" checked> Amount received = invoice total</label>
-    <div class="field"><label>Amount received (₹)</label><input id="f_rcamt" inputmode="decimal" disabled></div>
+    <div class="field"><label>Amount received (₹)</label><input id="f_rcamt" class="num" inputmode="decimal" autocomplete="off" disabled></div>
 
     <h2>Signature</h2>
     <div class="field"><label>Upload signature image (PNG / JPG)</label>
@@ -474,12 +474,12 @@ UDHNA YARD SURAT GUJARAT</textarea></div>
         <div class="field"><label>Description</label><input data-i="${i}" data-k="desc" value="${esc(it.desc)}"></div>
         <div class="item-grid">
           <div class="field"><label>HSN/SAC</label><input data-i="${i}" data-k="hsn" value="${esc(it.hsn)}"></div>
-          <div class="field"><label>Pcs</label><input data-i="${i}" data-k="pcs" value="${esc(it.pcs)}" inputmode="decimal"></div>
-          <div class="field"><label>Quantity</label><input data-i="${i}" data-k="qty" value="${esc(it.qty)}" inputmode="decimal"></div>
+          <div class="field"><label>Pcs</label><input data-i="${i}" data-k="pcs" value="${esc(it.pcs)}" class="num" inputmode="decimal" autocomplete="off"></div>
+          <div class="field"><label>Quantity</label><input data-i="${i}" data-k="qty" value="${esc(it.qty)}" class="num" inputmode="decimal" autocomplete="off"></div>
           <div class="field"><label>Unit</label><input data-i="${i}" data-k="unit" value="${esc(it.unit)}" placeholder="KW / Pcs"></div>
-          <div class="field"><label>Rate (₹)</label><input data-i="${i}" data-k="rate" value="${esc(it.rate)}" inputmode="decimal"></div>
-          <div class="field"><label>GST %</label><input data-i="${i}" data-k="gst" value="${esc(it.gst)}" inputmode="decimal"></div>
-          <div class="field" style="grid-column: span 2"><label>Amount (₹)</label><input data-i="${i}" data-k="amount" value="${esc(it.amount)}" inputmode="decimal"
+          <div class="field"><label>Rate (₹)</label><input data-i="${i}" data-k="rate" value="${esc(it.rate)}" class="num" inputmode="decimal" autocomplete="off"></div>
+          <div class="field"><label>GST %</label><input data-i="${i}" data-k="gst" value="${esc(it.gst)}" class="num" inputmode="decimal" autocomplete="off"></div>
+          <div class="field" style="grid-column: span 2"><label>Amount (₹)</label><input data-i="${i}" data-k="amount" value="${esc(it.amount)}" class="num" inputmode="decimal" autocomplete="off"
             ${it.rate !== "" ? "disabled placeholder='auto'" : ""}></div>
         </div>
       </div>`).join("");
@@ -565,6 +565,25 @@ UDHNA YARD SURAT GUJARAT</textarea></div>
     }
   }
   window.addEventListener("resize", fitPreview);
+
+  /* ---------- Number-only fields (digits and one decimal point) ---------- */
+  function cleanNumber(v) {
+    v = v.replace(/[^0-9.]/g, "");                 // drop letters, commas, spaces, signs…
+    const dot = v.indexOf(".");
+    if (dot !== -1) v = v.slice(0, dot + 1) + v.slice(dot + 1).replace(/\./g, "");  // keep only the first "."
+    return v;
+  }
+  // Runs before every other input handler (capture phase), so totals only ever see clean numbers
+  document.addEventListener("input", e => {
+    const el = e.target;
+    if (!el.classList || !el.classList.contains("num")) return;
+    const cleaned = cleanNumber(el.value);
+    if (cleaned !== el.value) {
+      const pos = Math.max(0, (el.selectionStart || 0) - (el.value.length - cleaned.length));
+      el.value = cleaned;
+      try { el.setSelectionRange(pos, pos); } catch (err) {}
+    }
+  }, true);
 
   /* ---------- Events ---------- */
   document.querySelectorAll(".panel input:not([data-i]), .panel textarea, .panel select").forEach(el => {
